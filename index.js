@@ -5,7 +5,7 @@ const process = require('node:process')
 const exec = require('node:child_process').exec
 const xml  = require('xml2js').parseString;
 require('dotenv').config()
-const job = new CronJob('0 */1 * * * *', function() {
+const job = new CronJob('0 */5 * * * *', function() {
 	const d = new Date();
 	console.log('Every 5 Minutes:', d);
     exec('nvidia-smi -q -x', (error, stdout, stderr) => {
