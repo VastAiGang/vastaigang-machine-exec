@@ -5,7 +5,6 @@ const process = require('node:process')
 const exec = require('node:child_process').exec
 const xml = require('xml2js')
 require('dotenv').config()
-
 const job = new CronJob('0 */1 * * * *', function() {
 	const d = new Date();
 	console.log('Every 5 Minutes:', d);
