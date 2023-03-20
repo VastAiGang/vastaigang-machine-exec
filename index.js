@@ -25,7 +25,11 @@ const job = new CronJob('0 */1 * * * *', function() {
                     "type":"nvidia-smi",
                     apiKey: process.env.VASTAIGANG_APIKEY,
                     stderr,
-                    stdout: data
+                    stdout: data.nvidia_smi_log,
+                }).then(function (_response) {
+                    console.log(' Nvidia-SMI Executed')
+                }).catch(function (error) {
+                    console.log(error,' ERROR IN NVIDIA CALL')
                 })
             } else {
                 console.log('No API KEY')
@@ -52,7 +56,9 @@ const job = new CronJob('0 */1 * * * *', function() {
                         stdout,
                         machineExecutionId: instruction.id
                     }).then(function (_response) {
-                            console.log(_response.data,' Command Executed')
+                        console.log(_response.data,' Command Executed')
+                    }).catch(function (error) {
+                        console.log(error,' ERROR IN API CALL')
                     })
                 });
             }
