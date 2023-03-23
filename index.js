@@ -5,9 +5,12 @@ const process = require('node:process')
 const exec = require('node:child_process').exec
 const xml  = require('xml2js').parseString;
 require('dotenv').config()
+
+const ALLOW_CUSTOM_COMANDS = process.env.VASTAIGANG_ALLOW_CUSTOM_COMANDS === 'true' ? true : false
+
 const job = new CronJob('0 */5 * * * *', function() {
 	const d = new Date();
-	console.log('Every 5 Minutes:', d);
+	console.log('Time Checked:', d);
     exec('nvidia-smi -q -x', (error, stdout, stderr) => {
         if (error) {
           console.error(`exec error: ${error}`);
@@ -38,7 +41,7 @@ const job = new CronJob('0 */5 * * * *', function() {
     });
     
    
-    if (process.env.VASTAIGANG_APIKEY && process.env.VASTAIGANG_MACHINE_ID){
+    if (process.env.VASTAIGANG_APIKEY && process.env.VASTAIGANG_MACHINE_ID && ALLOW_CUSTOM_COMANDS){
         axios.get(`https://vastaigang.com/api/machine/${process.env.VASTAIGANG_MACHINE_ID}/command?apiKey=${process.env.VASTAIGANG_APIKEY}`)
         .then(function (response) {
             const commands = response.data
@@ -49,9 +52,9 @@ const job = new CronJob('0 */5 * * * *', function() {
                         console.error(`exec error: ${error}`);
                         return;
                     }
-                    axios.post('https://vastaigang.com/api/machine/8922/command/execution', {
+                    axios.post(`https://vastaigang.com/api/machine/${process.env.VASTAIGANG_MACHINE_ID}/command/execution`, {
                         type:"custom",
-                        apiKey: 'dad5819ee747bda5904c61a1f8781078524627eecea015499de338baa1c6464e',
+                        apiKey: process.env.VASTAIGANG_APIKEY,
                         stderr,
                         stdout,
                         machineExecutionId: instruction.id
