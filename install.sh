@@ -10,7 +10,3 @@ echo "Installing node version $NODE_VERSION"
 nvm install $NODE_VERSION && 
 git clone https://github.com/VastAiGang/vastaigang-machine-exec.git
 cd vastaigang-machine-exec/
-export VASTAIGANG_MACHINE_ID=$0
-export VASTAIGANG_APIKEY=$1
-npm run init:part1
-npm run init:part2
