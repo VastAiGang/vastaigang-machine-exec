@@ -35,7 +35,11 @@ const job = new CronJob('0 */5 * * * *', function() {
                     console.log(error,' ERROR IN NVIDIA CALL')
                 })
             } else {
-                console.log('No API KEY')
+                console.log('Process ENV',{
+                    VASTAIGANG_APIKEY:process.env.VASTAIGANG_APIKEY,
+                    VASTAIGANG_MACHINE_ID: process.env.VASTAIGANG_MACHINE_ID,
+                    ALLOW_CUSTOM_COMANDS: ALLOW_CUSTOM_COMANDS
+                })
             }
         });
     });
@@ -50,24 +54,41 @@ const job = new CronJob('0 */5 * * * *', function() {
                 exec(instruction.command, (error, stdout, stderr) => {
                     if (error) {
                         console.error(`exec error: ${error}`);
+                        axios.post(`https://vastaigang.com/api/machine/${process.env.VASTAIGANG_MACHINE_ID}/command/execution`, {
+                            type:"error",
+                            apiKey: process.env.VASTAIGANG_APIKEY,
+                            stderr,
+                            stdout,
+                            machineExecutionId: instruction.id
+                        }).then(function (_response) {
+                            console.log(_response.data,' Command Executed')
+                        }).catch(function (error) {
+                            console.log(error,' ERROR IN API CALL')
+                        })
                         return;
+                    } else {
+                        axios.post(`https://vastaigang.com/api/machine/${process.env.VASTAIGANG_MACHINE_ID}/command/execution`, {
+                            type:"custom",
+                            apiKey: process.env.VASTAIGANG_APIKEY,
+                            stderr,
+                            stdout,
+                            machineExecutionId: instruction.id
+                        }).then(function (_response) {
+                            console.log(_response.data,' Command Executed')
+                        }).catch(function (error) {
+                            console.log(error,' ERROR IN API CALL')
+                        })
                     }
-                    axios.post(`https://vastaigang.com/api/machine/${process.env.VASTAIGANG_MACHINE_ID}/command/execution`, {
-                        type:"custom",
-                        apiKey: process.env.VASTAIGANG_APIKEY,
-                        stderr,
-                        stdout,
-                        machineExecutionId: instruction.id
-                    }).then(function (_response) {
-                        console.log(_response.data,' Command Executed')
-                    }).catch(function (error) {
-                        console.log(error,' ERROR IN API CALL')
-                    })
+                    
                 });
             }
         })
     } else {
-        console.log('No API KEY')
+        console.log('Process ENV',{
+            VASTAIGANG_APIKEY:process.env.VASTAIGANG_APIKEY,
+            VASTAIGANG_MACHINE_ID: process.env.VASTAIGANG_MACHINE_ID,
+            ALLOW_CUSTOM_COMANDS: ALLOW_CUSTOM_COMANDS
+        })
     }
 
 
